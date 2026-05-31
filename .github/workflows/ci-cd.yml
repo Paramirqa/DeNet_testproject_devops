@@ -1,0 +1,71 @@
+name: CI-CD
+
+on:
+  push:
+    branches:
+      - main
+      - ci
+
+jobs:
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: pytest -v
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build image
+        run: |
+         docker build -t ${{ secrets.DOCKER_USERNAME }}/task-api:${{ github.sha }} .
+         docker tag ${{ secrets.DOCKER_USERNAME }}/task-api:${{ github.sha }} \
+         ${{ secrets.DOCKER_USERNAME }}/task-api:latest
+
+      - name: Push image
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/task-api:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/task-api:latest
+
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Deploy to server
+  #       uses: appleboy/ssh-action@v1.2.0
+  #       with:
+  #         host: ${{ secrets.SERVER_HOST }}
+  #         username: ${{ secrets.SERVER_USER }}
+  #         key: ${{ secrets.SSH_PRIVATE_KEY }}
+  #         script: |
+  #           cd /opt/task-api
+  #           docker pull ${{ secrets.DOCKER_USERNAME }}/task-api:latest
+  #           docker compose up -d --pull always
+  #

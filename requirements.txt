@@ -8,7 +8,7 @@ uvicorn[standard]==0.47.0
 # Database (async PostgreSQL via SQLAlchemy)
 sqlalchemy[asyncio]==2.0.49
 asyncpg==0.31.0
-
+aiosqlite>=0.21.0
 # Redis
 redis==7.4.0
 

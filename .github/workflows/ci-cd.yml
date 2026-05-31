@@ -43,10 +43,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build image
-  run: |
-    docker build -t ${{ secrets.DOCKER_USERNAME }}/task-api:${{ github.sha }} .
-    docker tag ${{ secrets.DOCKER_USERNAME }}/task-api:${{ github.sha }} \
-      ${{ secrets.DOCKER_USERNAME }}/task-api:latest
+        run: |
+         docker build -t ${{ secrets.DOCKER_USERNAME }}/task-api:${{ github.sha }} .
+         docker tag ${{ secrets.DOCKER_USERNAME }}/task-api:${{ github.sha }} \
+         ${{ secrets.DOCKER_USERNAME }}/task-api:latest
 
       - name: Push image
         run: |

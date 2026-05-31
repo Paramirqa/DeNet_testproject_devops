@@ -68,3 +68,4 @@ jobs:
   #           cd /opt/task-api
   #           docker pull ${{ secrets.DOCKER_USERNAME }}/task-api:latest
   #           docker compose up -d --pull always
+  #test
